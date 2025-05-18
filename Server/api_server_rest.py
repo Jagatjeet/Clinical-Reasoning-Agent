@@ -112,17 +112,24 @@ async def process_diagnosis(request: Request):
     Returns {"rows": [...]} with all non‑JSON types converted.
     """
     body = await request.json()
-    query = body.get("query")
+    user_input = body.get("query")
+
+    print("user_input:" + user_input)
+
+    system_prompt = "You are a helpful AI Assistant, designed to provided well-reasoned and detailed responses. You FIRST think about the reasoning process as an internal monologue and then provide the user with the answer. The reasoning process MUST BE enclosed within <think> and </think> tags."
+    user_prompt = "Instructions:\nThink step-by-step and answer the following multiple-choice question. The reasoning process and answer should be enclosed within <think> <\/think> and <answer> <\/answer> tags, respectively, in the answer i.e., <think> reasoning process here <\/think> <answer> detailed answer with logical, concise explanation <\/answer>.The final answer should be on a new line starting with the phrase '\''Final Answer: '\''. It should be one of '\''A'\'', '\''B'\'', '\''C'\'', '\''D'\''. No other outputs are allowed. Now, try to solve the following question through the above guidelines:\n\n"
+
+    prompt = user_prompt + user_input
 
     data = {
         "messages": [
         {
         "role": "system",
-        "content": "You are a helpful AI Assistant, designed to provided well-reasoned and detailed responses. You FIRST think about the reasoning process as an internal monologue and then provide the user with the answer. The reasoning process MUST BE enclosed within <think> and </think> tags."
+        "content": system_prompt
         },
         {
         "role": "user",
-        "content": "Instructions:\nThink step-by-step and answer the following multiple-choice question. The reasoning process and answer should be enclosed within <think> <\/think> and <answer> <\/answer> tags, respectively, in the answer i.e., <think> reasoning process here <\/think> <answer> detailed answer with logical, concise explanation <\/answer>.The final answer should be on a new line starting with the phrase '\''Final Answer: '\''. It should be one of '\''A'\'', '\''B'\'', '\''C'\'', '\''D'\''. No other outputs are allowed. Now, try to solve the following question through the above guidelines:\n\nMurphy&;s sign is seen in?\nOptions:\nA. Acute appendicitis\nB. Acute cholecystitis\nC. Acute pancreatitis\nD. Ectopic pregnancy\n"
+        "content": prompt
         }
         ]
     }
@@ -141,16 +148,27 @@ async def process_diagnosis(request: Request):
 
     #req = urllib.request.Request(url, body, headers)
 
+    
+
     try:
+        print("I am here")
         response = requests.post(url, data=body, headers=headers)
-        print(response.json())
+        print(response.text)
+        print(type(response))
+        return response.json()
 
     except requests.exceptions.HTTPError as error:
         print("The request failed with status code: " + str(error.code))
 
         # Print the headers - they include the requert ID and the timestamp, which are useful for debugging the failure
         print(error.info())
-        print(error.read().decode("utf8", 'ignore'))    
+        print(error.read().decode("utf8", 'ignore'))
+
+@app.get("/")
+async def home_page():
+    #Test accessibility of the ngrok url. Paste the url in grok and you should see "home"
+    print("This is the home page")
+    return "home"
 
 if __name__ == "__main__":
     uvicorn.run("api_server_rest:app", host="0.0.0.0", port=8000, reload=True)

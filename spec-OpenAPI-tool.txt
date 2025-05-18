@@ -1,0 +1,75 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Clinical Diagnosis Query Answering Tool",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://7199-167-220-238-68.ngrok-free.app"
+    }
+  ],
+  "paths": {
+    "/symptom_analysis_diagnosis": {
+      "post": {
+        "operationId": "querySymptomDiagnosisReasoning",
+        "description": "Execute all questions related to symptom with disease diagnosis",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Question to be answered by the action;"
+                  }
+                },
+                "required": [
+                  "query"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response to the query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "rows": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      },
+                      "description": "List of JSON objects representing each row"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error getting an answer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

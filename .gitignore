@@ -4,3 +4,4 @@ Scripts/
 .env
 share/
 pyvenv.cfg
+Server/__pycache__/
