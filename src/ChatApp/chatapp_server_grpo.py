@@ -149,6 +149,7 @@ def diagnosis_agent(disease, symptoms):
 
 demo = gr.ChatInterface(
     fn=process_chat, 
+    title = "Clinical Agent - Reasoning Model"
     type="messages", 
     examples=[
         {"text": "No files", "files": []}
