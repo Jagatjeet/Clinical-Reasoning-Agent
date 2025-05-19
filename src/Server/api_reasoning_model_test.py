@@ -19,6 +19,7 @@ system_prompt = "You are a helpful AI Assistant, designed to provided well-reaso
 
 #user_input = "Murphy&;s sign is seen in?\nOptions:\nA. Acute appendicitis\nB. Acute cholecystitis\nC. Acute pancreatitis\nD. Ectopic pregnancy\n"
 user_input = "Which disease is more likely given the symptoms: Change in bowel habits, incomplete relief during bowel movement, rectal bleeding, blood in stool, belly pain, weakness, fatigue, and unintended weight loss? (Options: colorectal cancer or resected polyps)."
+#user_input = "calculate 5+(21*50)/2"
 user_prompt = "Instructions:\nThink step-by-step and answer the following multiple-choice question. The reasoning process and answer should be enclosed within <think> <\/think> and <answer> <\/answer> tags, respectively, in the answer i.e., <think> reasoning process here <\/think> <answer> detailed answer with logical, concise explanation <\/answer>.The final answer should be on a new line starting with the phrase '\''Final Answer: '\''. It should be one of '\''A'\'', '\''B'\'', '\''C'\'', '\''D'\''. No other outputs are allowed. Now, try to solve the following question through the above guidelines:\n\n"
 
 prompt = user_prompt + user_input
@@ -46,9 +47,11 @@ body = str.encode(json.dumps(data))
 
 print(body)
 
-url = os.environ["API_URL_REASONING_MODEL"]
+#url = os.environ["API_URL_REASONING_MODEL_GRPO"]
+url = os.environ["API_URL_REASONING_MODEL_BASE"]
 # Replace this with the primary/secondary key, AMLToken, or Microsoft Entra ID token for the endpoint
-api_key = os.environ['API_KEY_REASONING_MODEL']
+#api_key = os.environ['API_KEY_REASONING_MODEL_GRPO']
+api_key = os.environ['API_KEY_REASONING_MODEL_BASE']
 
 if not api_key:
     raise Exception("A key should be provided to invoke the endpoint")

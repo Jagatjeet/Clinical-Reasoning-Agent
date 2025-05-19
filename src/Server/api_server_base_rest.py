@@ -93,7 +93,7 @@ async def process_image(file: Annotated [UploadFile, File()]):
         for i in scores:
             print(i)
             print(labels[index])
-            if(i > .05):
+            if(i > .001):
                 disease = disease + str(text_index) + " " + labels[index] + "\n"
                 text_index = text_index + 1
             index = index + 1
@@ -136,9 +136,9 @@ async def process_diagnosis(request: Request):
 
     body = str.encode(json.dumps(data))
 
-    url = os.environ["API_URL_REASONING_MODEL"]
+    url = os.environ["API_URL_REASONING_MODEL_BASE"]
     # Replace this with the primary/secondary key, AMLToken, or Microsoft Entra ID token for the endpoint
-    api_key = os.environ['API_KEY_REASONING_MODEL']
+    api_key = os.environ['API_KEY_REASONING_MODEL_BASE']
 
     if not api_key:
         raise Exception("A key should be provided to invoke the endpoint")
@@ -168,7 +168,7 @@ async def process_diagnosis(request: Request):
 async def home_page():
     #Test accessibility of the ngrok url. Paste the url in grok and you should see "home"
     print("This is the home page")
-    return "home"
+    return "base"
 
 if __name__ == "__main__":
-    uvicorn.run("api_server_rest:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("api_server_base_rest:app", host="0.0.0.0", port=8000, reload=True)

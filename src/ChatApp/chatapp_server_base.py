@@ -53,7 +53,7 @@ def diagnosis_agent(disease, symptoms):
 
     # Create agent with the bing tool and process assistant run
     with project_client:
-        agent = project_client.agents.get_agent(os.environ["AGENT_CLINICAL_REASONING"])
+        agent = project_client.agents.get_agent(os.environ["AGENT_CLINICAL_REASONING_BASE"])
         
         print(f"Created agent, ID: {agent.id}")
 
@@ -70,7 +70,7 @@ def diagnosis_agent(disease, symptoms):
             prompt = f"Given disease {disease} and symptoms {symptoms} which of the disease is more likely ?"
 
         elif(len(disease) > 0):
-            prompt = f"Features have been extracted from an image. Extracted feature are {disease}. What are the diseases which have been identified in the features ?"
+            prompt = f"Features have been extracted from an image. Extracted feature are {disease}. What are the diseases which have been identified in the features ? Arrange the list of diseases as A) Disease 1 B) Disease 2 c) Disease 3 D) Disease 4"
 
         elif(len(symptoms)>0):
             prompt = symptoms

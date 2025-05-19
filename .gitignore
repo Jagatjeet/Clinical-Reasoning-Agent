@@ -5,3 +5,10 @@ Scripts/
 share/
 pyvenv.cfg
 Server/__pycache__/
+Dockerfile
+docker-compose.yaml
+src\startup.sh
+src\ChatApp\chatapp_test.py
+src\Server\api_server_sdk.py
+src\Server\create_agent.py
+src\Server\user_functions.py
