@@ -4,15 +4,55 @@ from azure.ai.projects import AIProjectClient
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects.models import BingGroundingTool
 import os
+import random
 
 from dotenv import load_dotenv
 # Load variables from .env file
 load_dotenv()
 thread_id = ""
 
+PROMPT_TEMPLATE = """Instructions:
+Think step-by-step and answer the following multiple-choice question. The reasoning process and answer should be enclosed within <think> </think> and <answer> </answer> tags, respectively, in the answer i.e., <think> reasoning process here </think> <answer> detailed answer with logical, concise explanation </answer>.The final answer should be on a new line starting with the phrase 'Final Answer: '. It should be one of 'A', 'B', 'C', 'D'. No other outputs are allowed. Now, try to solve the following question through the above guidelines:
+
+Question:
+
+Observed Symptoms:
+{symptoms}
+
+What is the prognosis 
+
+Options:
+{options_str}
+"""
+
+
+
+def apply_template(symptom_str, ref_disease, neg_diseases): 
+
+    options = [ ref_disease ] + neg_diseases
+    options_status = [ True, False, False, False ]
+
+    options_with_status = list(zip(options, options_status))
+    random.shuffle(options_with_status)
+    choices=['A', 'B', 'C', 'D']
+
+    options_detailed = [ (option, status, choice, f"{choice}. {option}") 
+                            for (option, status), choice in zip(options_with_status, choices) ]
+
+    options_str = '\n'.join([ x[3] for x in options_detailed ])                           
+
+    prompt = PROMPT_TEMPLATE.format(symptoms=symptom_str, options_str=options_str)
+
+    options_ref = list(filter(lambda x: x[1] is True, options_detailed))
+    assert(len(options_ref)==1)
+    ref = options_ref[0][2]
+
+    return { "prompt": prompt, "ref": ref, }
+
 def process_chat(message, history):
     global thread_id
-    disease = ""
+    #disease = ""
+    global disease
     symptoms = ""
 
     if (len(history)==0):
@@ -67,11 +107,11 @@ def diagnosis_agent(disease, symptoms):
         prompt = ""
 
         if(len(disease) > 0 and len(symptoms)>0):
-            prompt = f"Given disease {disease} and symptoms {symptoms} which of the disease is more likely ?"
+            prompt = f"Given disease {disease} and symptoms {symptoms} which of the disease is more likely ? Choose one of them"
 
         elif(len(disease) > 0):
-            prompt = f"Features have been extracted from an image. Extracted feature are {disease}. What are the diseases which have been identified in the features ? Arrange the list of diseases as A) Disease 1 B) Disease 2 c) Disease 3 D) Disease 4"
-
+            prompt = f"Features have been extracted from an image. Extracted feature are {disease}. What are the diseases which have been identified in the features ? The diseases should be listed with the prefixes 'A', 'B', 'C', 'D'"
+            
         elif(len(symptoms)>0):
             prompt = symptoms
 

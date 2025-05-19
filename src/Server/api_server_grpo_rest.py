@@ -83,23 +83,32 @@ async def process_image(file: Annotated [UploadFile, File()]):
         labels, scores = zip(
             *[
                 (r["label"], r["score"])
-                for r in sorted(response, key=lambda x: x["score"], reverse=True)
+                #for r in sorted(response, key=lambda x: x["score"], reverse=True)
+                for r in sorted(response, key=lambda x: x["score"])
             ][::-1]
         )
 
         index=0
         text_index=1
-        disease = ""
+        #disease = ""
+        disease = []
         for i in scores:
             print(i)
             print(labels[index])
             if(i > .001):
-                disease = disease + str(text_index) + " " + labels[index] + "\n"
-                text_index = text_index + 1
+                #disease = disease + str(text_index) + " " + labels[index] + "\n"
+                #text_index = text_index + 1
+                disease.append(labels[index])
             index = index + 1
+            if(len(disease) >= 4):
+                break
+        print("disease")
+        print(type(disease))
+        print(disease[0])
 
         #return{"filename":file.filename, "content_type":file.content_type, "message": f"The diseases detected are {disease}"}
-        return{"message": f"The diseases detected are {disease}"}
+        return disease
+        #return{"message": f"The diseases detected are {disease}"}
     
     except Exception as e:
         raise HTTPException (status_code=500, detail=f"Error processing image: {e}")
@@ -116,8 +125,8 @@ async def process_diagnosis(request: Request):
 
     print("user_input:" + user_input)
 
-    system_prompt = "You are a helpful AI Assistant, designed to provided well-reasoned and detailed responses. You FIRST think about the reasoning process as an internal monologue and then provide the user with the answer. The reasoning process MUST BE enclosed within <think> and </think> tags."
-    user_prompt = "Instructions:\nThink step-by-step and answer the following multiple-choice question. The reasoning process and answer should be enclosed within <think> <\/think> and <answer> <\/answer> tags, respectively, in the answer i.e., <think> reasoning process here <\/think> <answer> detailed answer with logical, concise explanation <\/answer>.The final answer should be on a new line starting with the phrase '\''Final Answer: '\''. It should be one of '\''A'\'', '\''B'\'', '\''C'\'', '\''D'\''. No other outputs are allowed. Now, try to solve the following question through the above guidelines:\n\n"
+    system_prompt = """You are a helpful AI Assistant, designed to provided well-reasoned and detailed responses. You FIRST think about the reasoning process as an internal monologue and then provide the user with the answer. The reasoning process MUST BE enclosed within <think> and </think> tags."""
+    user_prompt = """Think step-by-step and answer the following multiple-choice question. The reasoning process and answer should be enclosed within <think> </think> and <answer> </answer> tags, respectively, in the answer i.e., <think> reasoning process here </think> <answer> detailed answer with logical, concise explanation </answer>.The final answer should be on a new line starting with the phrase 'Final Answer: '. It should be one of 'A', 'B', 'C', 'D'. No other outputs are allowed. Now, try to solve the following question through the above guidelines:"""
 
     prompt = user_prompt + user_input
 
@@ -168,7 +177,7 @@ async def process_diagnosis(request: Request):
 async def home_page():
     #Test accessibility of the ngrok url. Paste the url in grok and you should see "home"
     print("This is the home page")
-    return "grpo"
+    return "base"
 
 if __name__ == "__main__":
-    uvicorn.run("api_server_grpo_rest:app", host="0.0.0.0", port=8001, reload=True)
+    uvicorn.run("api_server_base_rest:app", host="0.0.0.0", port=8000, reload=True)
